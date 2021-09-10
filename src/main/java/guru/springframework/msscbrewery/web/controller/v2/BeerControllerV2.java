@@ -5,10 +5,18 @@ import guru.springframework.msscbrewery.web.services.v2.BeerServiceV2;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+// this is for method level validation (ex: @NotNull in method inputs below)
+@Validated
 @RequestMapping("/api/v2/beer")
 @RestController
 public class BeerControllerV2 {
@@ -20,13 +28,13 @@ public class BeerControllerV2 {
     }
 
     @GetMapping({"/{beerId}"})
-    public ResponseEntity<BeerDtoV2> getBeer(@PathVariable("beerId") UUID beerId) {
+    public ResponseEntity<BeerDtoV2> getBeer(@NotNull @PathVariable("beerId") UUID beerId) {
 
         return new ResponseEntity<>(beerServiceV2.getBeerById(beerId), HttpStatus.OK);
     }
 
     @PostMapping// POST - create new beer
-    public ResponseEntity handlePost(@RequestBody BeerDtoV2 beerDtoV2o) {
+    public ResponseEntity handlePost(@Valid @NotNull @RequestBody BeerDtoV2 beerDtoV2o) {
 
         BeerDtoV2 savedDto = beerServiceV2.saveNewBeer(beerDtoV2o);
 
@@ -39,7 +47,7 @@ public class BeerControllerV2 {
     }
 
     @PutMapping({"/{beerId}"})
-    public ResponseEntity handleUpdate(@PathVariable("beerId") UUID beerId, @RequestBody BeerDtoV2 beerDtoV2) {
+    public ResponseEntity handleUpdate(@PathVariable("beerId") UUID beerId, @Valid @RequestBody BeerDtoV2 beerDtoV2) {
 
         beerServiceV2.updateBeer(beerId, beerDtoV2);
 
@@ -51,4 +59,5 @@ public class BeerControllerV2 {
     public void deleteBeer(@PathVariable UUID beerId) {
         beerServiceV2.deleteById(beerId);
     }
+
 }
